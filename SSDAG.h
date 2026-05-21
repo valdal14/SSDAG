@@ -27,4 +27,15 @@ typedef struct
  */
 void add_dependency(StateMatrix *sm, int source, int target);
 
+/**
+ * @brief Takes the current_state of the system, look up the specific adjacency mask 
+ * for the trigger_node, and return the new global state by applying a single bitwise 
+ * OR operation between the current state and the trigger node's mask.
+ * @param StateMatrix pointer
+ * @param uint64_t current_state
+ * @param int trigger_node
+ * @return uint64_t
+ */
+uint64_t get_blast_radius(StateMatrix *sm, uint64_t current_state, int trigger_node);
+
 #endif
