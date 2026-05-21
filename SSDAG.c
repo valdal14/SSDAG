@@ -11,31 +11,18 @@ void handle_error(int error_type)
 {
     switch(error_type)
     {
-        case 0:
-        {
+        case 0: 
             ERRNO1;
-            exit(1);
-        }
+            break;
+        case 1: 
+            ERRNO2;
+            break;
         default:
-        {
             ERRNO0;
-            exit(1);
-        }
+            break;
     }
-}
 
-/**
- * @brief Adds the edge dependency between vertexes
- * @param StateMatrix pointer
- * @param int source
- * @param int target
- * @return void
- */
-void add_dependency(StateMatrix *sm, int source, int target)
-{
-    if((source < MIN_VAL || source > MAX_VAL) || (target < MIN_VAL || target > MAX_VAL)) handle_error(VALUE_ERROR);
-    sm->matrix[source] |= (1ULL << target);
-    printf("invisible stitching phase: source %d -> mask %llu\n", source, sm->matrix[source]);
+    exit(1);
 }
 
 /**
@@ -84,18 +71,22 @@ uint64_t resolve_cascade(StateMatrix *sm, uint64_t initial_state)
     return current_state;
 }
 
-int main(void)
+/**
+ * @brief Adds the edge dependency between vertexes 
+ * only after detecting a potential cycle that breaks
+ * the DAG nature of a Graph.
+ * @param StateMatrix pointer
+ * @param int source
+ * @param int target
+ * @return void
+ */
+void add_dependency(StateMatrix *sm, int source, int target)
 {
-    StateMatrix dag = {0};
-    // Node 0 is currently the only thing failing. 1 in binary is ...0001, which corresponds to bit 0
-    uint64_t global_state = 1;
-    
-    add_dependency(&dag, 0, 1);
-    add_dependency(&dag, 0, 2);
-    add_dependency(&dag, 2, 5);
+    if((source < MIN_VAL || source > MAX_VAL) || (target < MIN_VAL || target > MAX_VAL)) handle_error(VALUE_ERROR);
+    uint64_t simulated_radius = resolve_cascade(sm, (1ULL << target));
 
-    uint64_t state = get_blast_radius(&dag, global_state, 0);
-    uint64_t new_state = resolve_cascade(&dag, global_state);
-    printf("invisible stitching phase: current_state %llu -> new state %llu\n", global_state, new_state);
-    return 0;
+    if (simulated_radius & (1ULL << source)) handle_error(CYCLE_ERROR);
+    
+    sm->matrix[source] |= (1ULL << target);
+    printf("invisible stitching phase: source %d -> mask %llu\n", source, sm->matrix[source]);
 }

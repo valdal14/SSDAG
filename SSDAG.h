@@ -9,9 +9,11 @@
 #define MAX_VAL 63
 // Types
 #define VALUE_ERROR 0
+#define CYCLE_ERROR 1
 // Error Messages
 #define ERRNO0 fprintf(stderr, "Unsupported type\n");
 #define ERRNO1 fprintf(stderr, "Invalid source or target. Value range must be 0 to 63\n");
+#define ERRNO2 fprintf(stderr, "Cycle detected. Invalid DAG edge.\n");
 
 typedef struct
 {
