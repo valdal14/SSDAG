@@ -38,4 +38,12 @@ void add_dependency(StateMatrix *sm, int source, int target);
  */
 uint64_t get_blast_radius(StateMatrix *sm, uint64_t current_state, int trigger_node);
 
+/**
+ * @brief Resolves dependency cascade between vertexes
+ * @param StateMatrix pointer
+ * @param uint64_t initial_state
+ * @return uint64_t
+ */
+uint64_t resolve_cascade(StateMatrix *sm, uint64_t initial_state);
+
 #endif
