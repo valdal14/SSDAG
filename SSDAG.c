@@ -38,9 +38,33 @@ void add_dependency(StateMatrix *sm, int source, int target)
     printf("invisible stitching phase: source %d -> mask %llu\n", source, sm->matrix[source]);
 }
 
+/**
+ * @brief Takes the current_state of the system, look up the specific adjacency mask
+ * for the trigger_node, and return the new global state by applying a single bitwise
+ * OR operation between the current state and the trigger node's mask.
+ * @param StateMatrix pointer
+ * @param uint64_t current_state
+ * @param int trigger_node
+ * @return uint64_t
+ */
+uint64_t get_blast_radius(StateMatrix *sm, uint64_t current_state, int trigger_node)
+{
+    uint64_t state = sm->matrix[trigger_node];
+    state = state | current_state;
+    printf("invisible stitching phase: current_state %llu -> new state %llu\n", current_state, state);
+    return state;
+}
+
 int main(void)
 {
     StateMatrix dag = {0};
-    add_dependency(&dag, 0, 14);
+    // Node 0 is currently the only thing failing. 1 in binary is ...0001, which corresponds to bit 0
+    uint64_t global_state = 1;
+    
+    add_dependency(&dag, 0, 1);
+    add_dependency(&dag, 0, 2);
+   
+    uint64_t state = get_blast_radius(&dag, global_state, 0);
+    
     return 0;
 }
